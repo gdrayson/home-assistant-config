@@ -1,0 +1,1369 @@
+- id: '1747844759998'
+  alias: Set Alarm
+  description: ''
+  triggers:
+  - device_id: 26b5c35a97bb274070d558b5c5bc81ec
+    domain: alarm_control_panel
+    entity_id: a194304adb1eafd9ff3dd43f41e5289f
+    type: armed_home
+    for:
+      seconds: 1
+    trigger: device
+  - device_id: 26b5c35a97bb274070d558b5c5bc81ec
+    domain: alarm_control_panel
+    entity_id: a194304adb1eafd9ff3dd43f41e5289f
+    type: armed_away
+    for:
+      seconds: 1
+    trigger: device
+  conditions: []
+  actions:
+  - target:
+      device_id: 80b4997250bff8be50f48b1f3c693793
+    action: fan.turn_off
+    data: {}
+  - target:
+      area_id: office
+    action: light.turn_off
+    data: {}
+  - target:
+      area_id: living_room
+    action: light.turn_off
+    data: {}
+  - target:
+      entity_id: switch.10001c36cf
+    action: switch.turn_off
+    data: {}
+  - target:
+      entity_id: 5c1dc3edc9acfc2e50f33b931acd6fb9
+    action: light.turn_off
+    data: {}
+  - choose:
+    - conditions:
+      - condition: device
+        device_id: 26b5c35a97bb274070d558b5c5bc81ec
+        domain: alarm_control_panel
+        entity_id: a194304adb1eafd9ff3dd43f41e5289f
+        type: is_armed_home
+      sequence:
+      - data:
+          message: Alarm has been set to Home
+          title: Alarm
+        action: notify.pushover
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: The alarm has been set to Home mode.
+        action: notify.send_message
+    - conditions: []
+      sequence:
+      - data:
+          message: Alarm has been set to Away
+          title: Alarm
+        action: notify.pushover
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: The alarm has been set to Away mode.
+        action: notify.send_message
+  mode: single
+- id: '1748011228057'
+  alias: Gordon Calendar
+  description: ''
+  triggers:
+  - trigger: calendar
+    entity_id: calendar.gordon
+    event: start
+    offset: -0:5:0
+  conditions:
+  - condition: state
+    entity_id: person.gordon_drayson
+    state: home
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      device_id:
+      - c4a6c8901c4548e5dbd4b9264f823998
+      - 0218076a1c2d4609792c3e776adbf9b7
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id:
+      - c4a6c8901c4548e5dbd4b9264f823998
+      - 0218076a1c2d4609792c3e776adbf9b7
+  mode: single
+- id: '1748012785427'
+  alias: Test Presence Condition
+  description: Send a notification only if Gordon Drayson is home
+  triggers:
+  - event_type: test_presence_check
+    trigger: event
+    enabled: true
+  - trigger: calendar
+    entity_id: calendar.gordon
+    event: start
+    offset: -0:45:0
+  - trigger: time
+    at: '22:19:00'
+  conditions:
+  - condition: state
+    entity_id: person.gordon_drayson
+    state: home
+    enabled: true
+  actions:
+  - action: light.toggle
+    metadata: {}
+    data: {}
+    target:
+      device_id: c4a6c8901c4548e5dbd4b9264f823998
+  mode: single
+- id: '1748018144823'
+  alias: Alexa test
+  description: ''
+  triggers:
+  - entity_id: input_boolean.alexa_trigger_test
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - parallel:
+    - target:
+        device_id:
+        - c4a6c8901c4548e5dbd4b9264f823998
+        - 0218076a1c2d4609792c3e776adbf9b7
+      action: light.toggle
+      data: {}
+    - target:
+        entity_id: input_boolean.alexa_trigger_test
+      action: input_boolean.turn_off
+      data: {}
+    - action: notify.alexa_media_everywhere
+      data:
+        message: Time for some BOPS
+        data:
+          type: announce
+          method: all
+  - target:
+      entity_id: media_player.office_show
+    data:
+      volume_level: 0.67
+    action: media_player.volume_set
+  - target:
+      entity_id: media_player.office_show
+    data:
+      media_content_type: custom
+      media_content_id: Play Magic Musicals Radio
+    action: media_player.play_media
+  mode: single
+- id: '1748021822776'
+  alias: Alexa Test Announcement in Office
+  description: ''
+  triggers:
+  - at: '17:00:00'
+    trigger: time
+  conditions: []
+  actions:
+  - target:
+      entity_id: media_player.office_show
+    data:
+      volume_level: 0.4
+    action: media_player.volume_set
+  - target:
+      entity_id: media_player.office_show
+    data:
+      media_content_type: custom
+      media_content_id: Play Magic Musicals Radio
+    action: media_player.play_media
+  mode: single
+- id: '1748023635850'
+  alias: Party Time
+  description: ''
+  triggers:
+  - device_id: 8396e81ce9e2d7f9e81329878656a1a4
+    domain: media_player
+    entity_id: 6bf9b29df0a65169354ea09a2b28451a
+    type: paused
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.toggle
+    metadata: {}
+    data: {}
+    target:
+      device_id: c4a6c8901c4548e5dbd4b9264f823998
+  - repeat:
+      count: 5
+      sequence:
+      - action: light.toggle
+        metadata: {}
+        data: {}
+        target:
+          device_id:
+          - c4a6c8901c4548e5dbd4b9264f823998
+          - 0218076a1c2d4609792c3e776adbf9b7
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 200
+  mode: single
+- id: '1748036246671'
+  alias: Laundry Cycle Complete
+  description: Lets everyone know when the washing machine or tumble dryer has finished.
+  triggers:
+  - entity_id: sensor.washing_machine_machine_state
+    from: run
+    to: stop
+    trigger: state
+  - entity_id: sensor.tumble_dryer_machine_state
+    from: run
+    to: stop
+    trigger: state
+  conditions: []
+  actions:
+  - target:
+      entity_id: notify.everywhere_announce
+    data:
+      message: "{% if trigger.entity_id == 'sensor.tumble_dryer_machine_state' %}\n
+        \ The tumble dryer has finished its cycle.\n{% else %}\n  The washing machine
+        has finished its cycle.\n{% endif %}\n"
+    action: notify.send_message
+  mode: single
+- id: '1748036378183'
+  alias: Door Open Announcement
+  description: 'Announces on the Alexa device in the office when any SimpliSafe door
+    is open, and reminds after 3 minutes if still open.
+
+    '
+  triggers:
+  - event_type: SIMPLISAFE_EVENT
+    event_data:
+      last_event_type: secret_alert_triggered
+      last_event_sensor_serial: 004680bf
+    id: front
+    trigger: event
+  - event_type: SIMPLISAFE_EVENT
+    event_data:
+      last_event_type: secret_alert_triggered
+      last_event_sensor_serial: 0046519b
+    id: back
+    trigger: event
+  - event_type: SIMPLISAFE_EVENT
+    event_data:
+      last_event_type: secret_alert_triggered
+      last_event_sensor_serial: '00466010'
+    id: gate
+    trigger: event
+  - event_type: SIMPLISAFE_EVENT
+    event_data:
+      last_event_type: secret_alert_triggered
+      last_event_sensor_serial: 006667d6
+    id: garage
+    trigger: event
+  conditions:
+  - condition: state
+    entity_id: person.gordon_drayson
+    state: home
+  actions:
+  - target:
+      entity_id: notify.office_show_announce
+    data:
+      message: "{% if trigger.id == 'front' %}\n  The front door is open.\n{% elif
+        trigger.id == 'back' %}\n  The back door is open.\n{% elif trigger.id == 'gate'
+        %}\n  The gate is open.\n{% elif trigger.id == 'garage' %}\n  The garage is
+        open.\n{% endif %}\n"
+    action: notify.send_message
+  - delay:
+      minutes: 3
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''front'' and is_state(''binary_sensor.front_door_entry_door'',
+          ''on'') }}
+
+          '
+      sequence:
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: The front door is still open.
+        action: notify.send_message
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''back'' and is_state(''binary_sensor.back_door_entry_door'',
+          ''on'') }}
+
+          '
+      sequence:
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: The back door is still open.
+        action: notify.send_message
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''gate'' and is_state(''binary_sensor.gate_entry_door'',
+          ''on'') }}
+
+          '
+      sequence:
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: The gate is still open.
+        action: notify.send_message
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''garage'' and is_state(''binary_sensor.garage_entry_door'',
+          ''on'') }}
+
+          '
+      sequence:
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: The garage door is still open.
+        action: notify.send_message
+  mode: parallel
+- id: '1748037444841'
+  alias: Office Lights Auto-Adjust
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.office_apple_tv
+    to: playing
+  - trigger: state
+    entity_id:
+    - media_player.office_apple_tv
+    from: playing
+    to:
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: media_player.office_apple_tv
+        state: playing
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.office_watch_tv
+        data: {}
+    default:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.office_bright
+      data: {}
+  mode: single
+- id: '1748088912176'
+  alias: Check and turn on TV
+  description: Check if TV is on and if not, turn it on.
+  triggers: []
+  conditions: []
+  actions:
+  - alias: Conditionally switch to Watch Sky - Lounge
+    choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ states(''select.harmony_hub_activities'') not in [''Watch
+          Sky - Lounge'', ''Watch Sky - Kitchen''] }}'
+      sequence:
+      - alias: Switch Harmony activity to Sky Lounge
+        target:
+          entity_id: select.harmony_hub_activities
+        data:
+          option: Watch Sky - Lounge
+        action: select.select_option
+      - alias: Wait until Harmony is in Sky mode
+        wait_for_trigger:
+        - entity_id: select.harmony_hub_activities
+          to: Watch Sky - Lounge
+          trigger: state
+        - entity_id: select.harmony_hub_activities
+          to: Watch Sky - Kitchen
+          trigger: state
+        timeout: 00:00:15
+        continue_on_timeout: true
+      - alias: Notify if Harmony did not switch in time
+        if:
+        - condition: template
+          value_template: '{{ states(''select.harmony_hub_activities'') not in [''Watch
+            Sky - Lounge'', ''Watch Sky - Kitchen''] }}
+
+            '
+        then:
+        - target:
+            entity_id: notify.everywhere_announce
+          data:
+            message: The TV did not switch to Sky mode. Please check Harmony.
+          action: notify.send_message
+      - alias: Final delay to allow TV/Sky to finish turning on
+        delay: 00:00:05
+        enabled: false
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.alexa_lounge_tv
+  mode: single
+- id: '1748092298579'
+  alias: 11 o’clock
+  description: Announces it is 11pm in the lounge
+  triggers:
+  - at: '23:00:00'
+    trigger: time
+  conditions: []
+  actions:
+  - target:
+      entity_id: notify.lounge_echo_dot_announce
+    data:
+      message: It’s eleven o’clock
+    action: notify.send_message
+  mode: single
+- id: '1748093623547'
+  alias: TV Channel Selector
+  description: Changes TV channel based on number helper selection - fully self-contained
+  triggers:
+  - alias: Channel selector changed
+    trigger: state
+    entity_id: input_number.alexa_tv_channel
+  conditions:
+  - alias: Valid channel selected (not 0 and not resetting to 0)
+    condition: template
+    value_template: '{{ trigger.to_state.state | replace('','', ''.'') | float > 0
+      }}'
+  - alias: State actually changed
+    condition: template
+    value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
+  - alias: Not triggered by our own reset (avoid the race condition)
+    condition: template
+    value_template: '{{ trigger.from_state.state | replace('','', ''.'') | float !=
+      0 or trigger.to_state.state | replace('','', ''.'') | float != 0 }}'
+  actions:
+  - alias: Debug log variables
+    action: system_log.write
+    data:
+      message: 'DEBUG: channel_id={{ channel_id }}, name=''{{ selected_channel_name
+        }}'', sky=''{{ selected_channel_sky }}'', digits={{ sky_digits }}'
+      level: info
+  - alias: Turn on TV if needed
+    action: automation.trigger
+    target:
+      entity_id: automation.check_and_turn_on_tv
+    data:
+      skip_condition: true
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ selected_channel_sky != '''' }}'
+      sequence:
+      - alias: Log channel change
+        action: system_log.write
+        data:
+          message: 'SUCCESS: Changing to channel {{ channel_id }}: {{ selected_channel_name
+            }} (Sky {{ selected_channel_sky }})'
+          level: info
+      - parallel:
+        - alias: Announce channel change
+          target:
+            entity_id: notify.lounge_echo_dot_announce
+          data:
+            message: '{{ announcement }}'
+          action: notify.send_message
+        - alias: Send IR commands for channel digits
+          action: script.send_ir_command
+          data:
+            device: sky
+            buttons: "{% set ns = namespace(items=[]) %} {% for digit in sky_digits
+              %}\n  {% set ns.items = ns.items + [{'value': digit | int, 'delay':
+              0.15}] %}\n{% endfor %} {{ ns.items }}"
+    default:
+    - alias: Log unknown channel
+      action: system_log.write
+      data:
+        message: 'FAILED: Unknown channel requested: {{ channel_id }} (raw value:
+          {{ trigger.to_state.state }})'
+        level: warning
+    - alias: Announce unknown channel
+      target:
+        entity_id: notify.lounge_echo_dot_announce
+      data:
+        message: The selected channel is unknown.
+      action: notify.send_message
+  - alias: Wait before reset
+    delay:
+      seconds: 2
+  - alias: Reset channel selector to 0
+    action: input_number.set_value
+    target:
+      entity_id: input_number.alexa_tv_channel
+    data:
+      value: 0
+  variables:
+    channel_id: '{{ trigger.to_state.state | replace('','', ''.'') | round(0) | int
+      }}'
+    channel_data: "{% set channels = {\n  1: 'BBC One|101',\n  2: 'BBC Two|102',\n
+      \ 3: 'ITV|103',\n  4: 'Channel 4|104',\n  5: 'Channel 5|105',\n  6: 'Sky Atlantic|108',\n
+      \ 7: 'BBC Three|115',\n  8: 'BBC Four|116',\n  9: 'ITV2|118',\n  10: 'ITV3|119',\n
+      \ 11: 'E4|135',\n  12: 'More4|136',\n  13: 'Film4|313',\n  14: 'Sky Premiere|301',\n
+      \ 15: 'Sky Sports Main Event|401',\n  16: 'Sky Sports Premier League|402',\n
+      \ 17: 'Sky Sports F1|407',\n  18: 'Sky News|501',\n  19: 'BBC News|503',\n  20:
+      'Discovery|125',\n  21: 'National Geographic|129',\n  22: 'Comedy Central|112',\n
+      \ 23: 'Dave|111',\n  24: 'Gold|110',\n  25: 'Quest|144',\n  26: 'Comedy|114',\n
+      \ 27: 'ITV4|120',\n  28: 'Alibi|109',\n  29: 'Pin|0347',\n  30: 'History|123',\n
+      \ 31: 'Comedy Xtra|127',\n  32: 'History 2|163',\n  33: 'Sky Witness|107'\n}
+      %} {{ channels[channel_id] if channel_id in channels else 'Unknown|' }}"
+    channel_parts: '{{ channel_data.split(''|'') }}'
+    selected_channel_name: '{{ channel_parts[0] }}'
+    selected_channel_sky: '{{ channel_parts[1] }}'
+    sky_digits: '{{ channel_parts[1] | string | list }}'
+    announcement: Switching to {{ selected_channel_name }}
+  mode: single
+- id: '1748176684573'
+  alias: Office Motion Controlled Lighting
+  description: Turns on office lights and plays announcement when motion is detected.
+    Turns off lights when no motion for 1 minute. Prevents multiple announcements
+    by keeping gate active until motion clears completely.
+  triggers:
+  - alias: Motion Detected
+    trigger: state
+    entity_id:
+    - binary_sensor.lnlinkha_e04b410119ef000000000000b9ac0000_area_1
+    to: 'on'
+    id: Motion Detected
+  - alias: Motion Clear for 20 seconds
+    trigger: state
+    entity_id:
+    - binary_sensor.lnlinkha_e04b410119ef000000000000b9ac0000_area_1
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 20
+    id: Motion Not Detected
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: Motion Detected
+      - condition: state
+        entity_id: input_boolean.office_motion_state
+        state: 'off'
+      sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.office_motion_state
+        data: {}
+      - action: notify.alexa_media_office_show
+        data:
+          message: Welcome Gordon
+          data:
+            type: announce
+        enabled: false
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.office_bright
+    - conditions:
+      - condition: trigger
+        id: Motion Not Detected
+      sequence:
+      - action: light.turn_off
+        target:
+          area_id: office
+        data: {}
+      - action: notify.alexa_media_office_show
+        metadata: {}
+        data:
+          message: Office Shut down
+          data:
+            type: announce
+        enabled: false
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.office_motion_state
+        data: {}
+  mode: single
+- id: '1748626958078'
+  alias: Handle Office TV Commands
+  description: Handles TV and sound actions based on Alexa-triggered input_boolean
+  triggers:
+  - entity_id: input_boolean.office_tv
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.to_state.state == ''on'' }}'
+      sequence:
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: Now Say Echo, disconnect from Bluetooth
+        action: notify.send_message
+      - delay:
+          seconds: 5
+      - device_id: 806bce887a401b2a7378ecd6931c2a64
+        domain: button
+        entity_id: 312e4419627d51768f00e599101871d9
+        type: press
+      - device_id: 6d950ce3b21a1b2ccd16b41eaaea8165
+        domain: button
+        entity_id: 5f007cf5bdac6ce9b4d06c210c6311b3
+        type: press
+      - delay:
+          seconds: 2
+      - device_id: 6d950ce3b21a1b2ccd16b41eaaea8165
+        domain: button
+        entity_id: 5f007cf5bdac6ce9b4d06c210c6311b3
+        type: press
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.to_state.state == ''off'' }}'
+      sequence:
+      - device_id: 806bce887a401b2a7378ecd6931c2a64
+        domain: button
+        entity_id: 312e4419627d51768f00e599101871d9
+        type: press
+      - device_id: 6d950ce3b21a1b2ccd16b41eaaea8165
+        domain: button
+        entity_id: 5f007cf5bdac6ce9b4d06c210c6311b3
+        type: press
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: Now Say Echo, connect to Bluetooth
+        action: notify.send_message
+  mode: single
+- id: '1750445624116'
+  alias: Turn on/off TV (with Harmony)
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.alexa_lounge_tv
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.alexa_lounge_tv
+        state: 'on'
+      sequence:
+      - action: remote.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: remote.harmony_hub
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.alexa_lounge_tv
+        state: 'off'
+      sequence:
+      - action: remote.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: remote.harmony_hub
+  mode: single
+- id: '1752141559901'
+  alias: Change TV State by Harmony
+  description: ''
+  triggers:
+  - type: changed_states
+    device_id: e29c182aa68dbfa966e6318d44ebd7fb
+    entity_id: b37566f92b27718a5da078fff5fbbfaa
+    domain: remote
+    trigger: device
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_off
+        device_id: e29c182aa68dbfa966e6318d44ebd7fb
+        entity_id: b37566f92b27718a5da078fff5fbbfaa
+        domain: remote
+      sequence:
+      - action: input_boolean.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.alexa_lounge_tv
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: e29c182aa68dbfa966e6318d44ebd7fb
+        entity_id: b37566f92b27718a5da078fff5fbbfaa
+        domain: remote
+      sequence:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.alexa_lounge_tv
+  mode: single
+- id: '1752141856927'
+  alias: Bambu X1C - Auto Chamber Light
+  description: Turn chamber light on when printing, off when done — with Alexa announcements
+  triggers:
+  - entity_id: sensor.x1c_00m09d4a3000499_print_status
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sensor.x1c_00m09d4a3000499_print_status
+        state: printing
+      sequence:
+      - target:
+          entity_id: light.x1c_00m09d4a3000499_chamber_light
+        action: light.turn_on
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: The printer has started a new job.
+        action: notify.send_message
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: sensor.x1c_00m09d4a3000499_print_status
+          state: idle
+        - condition: state
+          entity_id: sensor.x1c_00m09d4a3000499_print_status
+          state: completed
+      sequence:
+      - target:
+          entity_id: light.x1c_00m09d4a3000499_chamber_light
+        action: light.turn_off
+      - target:
+          entity_id: notify.office_show_announce
+        data:
+          message: The printer has finished printing.
+        action: notify.send_message
+  mode: single
+- id: alert_check_tv_turned_off
+  alias: Alert when "Check and turn on TV" is turned off
+  description: ''
+  triggers:
+  - entity_id: automation.check_and_turn_on_tv
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - data:
+      title: Automation Disabled
+      message: '"Check and turn on TV" automation was turned off.'
+    action: notify.pushover
+  mode: single
+- id: alert_check_tv_turned_off
+  alias: Alert when Check and turn on TV is turned off
+  description: ''
+  triggers:
+  - entity_id: automation.check_and_turn_on_tv
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - data:
+      title: Automation Disabled
+      message: '"Check and turn on TV" automation was turned off.'
+    action: notify.pushover
+  mode: single
+- id: '1756408096702'
+  alias: front door hallway camera (in progress)
+  description: ''
+  triggers:
+  - type: opened
+    device_id: e3c10bbcffa2840f9e0f11634be3a630
+    entity_id: a435a35fb683257410cda7af67418e4b
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions: []
+  mode: single
+- id: '1757067586422'
+  alias: Soft water salt — notify when due
+  description: ''
+  triggers:
+  - at: 09:00:00
+    trigger: time
+  conditions:
+  - condition: template
+    value_template: '{{ states(''sensor.salt_days_remaining'')|int(9999) <= 0 }}'
+  actions:
+  - action: notify.mobile_app_iphone
+    data:
+      title: "\U0001F9C2 Salt refill due"
+      message: 'Next: {{ states(''sensor.next_salt_refill_long'') }} ({{ states(''sensor.salt_days_remaining'')
+        }}d)
+
+        '
+      data:
+        actions:
+        - action: RESET_SALT_TIMER
+          title: ✅ Refilled
+  - action: notify.mobile_app_gordons_ipad
+    data:
+      title: "\U0001F9C2 Salt refill due"
+      message: 'Next: {{ states(''sensor.next_salt_refill_long'') }} ({{ states(''sensor.salt_days_remaining'')
+        }}d)
+
+        '
+      data:
+        actions:
+        - action: RESET_SALT_TIMER
+          title: ✅ Refilled
+  - action: notify.mobile_app_gordons_mac_mini
+    data:
+      title: "\U0001F9C2 Salt refill due"
+      message: 'Next: {{ states(''sensor.next_salt_refill_long'') }} ({{ states(''sensor.salt_days_remaining'')
+        }}d)
+
+        '
+      data:
+        actions:
+        - action: RESET_SALT_TIMER
+          title: ✅ Refilled
+  mode: restart
+- id: '1757067685061'
+  alias: Soft water salt — handle reset
+  triggers:
+  - event_type: mobile_app_notification_action
+    event_data:
+      action: RESET_SALT_TIMER
+    trigger: event
+  actions:
+  - action: script.salt_refilled_today
+  - action: notify.mobile_app_iphone
+    data:
+      message: Salt refill date set to today ({{ now().strftime('%d/%m/%y') }})
+  - action: notify.mobile_app_gordons_ipad
+    data:
+      message: Salt refill date set to today ({{ now().strftime('%d/%m/%y') }})
+  - action: notify.mobile_app_gordons_mac_mini
+    data:
+      message: Salt refill date set to today ({{ now().strftime('%d/%m/%y') }})
+  mode: queued
+- id: '1757265077473'
+  alias: Marty – snapshot on motion
+  description: ''
+  triggers:
+  - entity_id: binary_sensor.marty_cam_motion
+    to: 'on'
+    trigger: state
+  actions:
+  - action: script.update_marty_snapshot
+  mode: single
+- id: '1757268553608'
+  alias: Martycam – snapshot on motion
+  description: ''
+  triggers:
+  - entity_id: binary_sensor.marty_cam_motion
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - action: script.update_martycam_snapshot
+  mode: single
+- id: bambu_finished_or_error_notify
+  alias: Bambu – Finished or Error → Phone + Alexa
+  description: ''
+  triggers:
+  - id: finished
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_finished
+    trigger: device
+  - id: print_error
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_error
+    trigger: device
+  - id: printer_error
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_printer_error
+    trigger: device
+  - id: print_failed
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_failed
+    trigger: device
+  actions:
+  - action: notify.mobile_app_iphone
+    data:
+      title: '{{ title }}'
+      message: '{{ message }}{% if help_url %}  • More info: {{ help_url }}{% endif
+        %}'
+      data:
+        url: '{{ help_url }}'
+  - action: notify.mobile_app_gordons_ipad
+    data:
+      title: '{{ title }}'
+      message: '{{ message }}{% if help_url %}  • More info: {{ help_url }}{% endif
+        %}'
+      data:
+        url: '{{ help_url }}'
+  - action: notify.office_show_announce
+    data:
+      message: '{{ title }}. {{ message }}'
+  - action: notify.bedroom_echo_show_announce
+    data:
+      message: '{{ title }}. {{ message }}'
+  mode: single
+  variables:
+    printer_name: '{{ trigger.event.data.name | default(''Bambu printer'') }}'
+    err_code: '{{ trigger.event.data.code | default('''') }}'
+    err_text: '{{ trigger.event.data.error | default('''') }}'
+    help_url: '{{ trigger.event.data.url | default('''') }}'
+    is_finished: '{{ trigger.id == ''finished'' }}'
+    is_error: '{{ trigger.id in [''print_error'',''printer_error'',''print_failed'']
+      }}'
+    title: '{{ ''Print finished'' if is_finished else ''Printer error'' if is_error
+      else ''Printer event'' }} – {{ printer_name }}'
+    message: "{% if is_finished -%}\n  Your print has completed on {{ printer_name
+      }}.\n{%- else -%}\n  {% if err_code %}{{ err_code }} – {% endif %}{{ err_text
+      | default('An error was reported.') }}\n{%- endif %}"
+- id: bambu_finished_or_error_notify
+  alias: Bambu – Finished or Error → Phone + Alexa
+  description: ''
+  triggers:
+  - id: finished
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_finished
+    trigger: device
+  - id: print_error
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_error
+    trigger: device
+  - id: printer_error
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_printer_error
+    trigger: device
+  - id: print_failed
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_failed
+    trigger: device
+  actions:
+  - action: notify.mobile_app_iphone
+    data:
+      title: '{{ title }}'
+      message: '{{ message }}{% if help_url %}  • More info: {{ help_url }}{% endif
+        %}'
+      data:
+        url: '{{ help_url }}'
+  - action: notify.mobile_app_gordons_ipad
+    data:
+      title: '{{ title }}'
+      message: '{{ message }}{% if help_url %}  • More info: {{ help_url }}{% endif
+        %}'
+      data:
+        url: '{{ help_url }}'
+  - choose:
+    - conditions:
+      - condition: time
+        after: 08:00:00
+        before: '22:00:00'
+      sequence:
+      - action: notify.office_show_announce
+        data:
+          message: '{{ title }}. {{ message }}'
+      - action: notify.bedroom_echo_show_announce
+        data:
+          message: '{{ title }}. {{ message }}'
+  mode: single
+  variables:
+    printer_name: '{{ trigger.event.data.name | default(''Bambu printer'') }}'
+    err_code: '{{ trigger.event.data.code | default('''') }}'
+    err_text: '{{ trigger.event.data.error | default('''') }}'
+    help_url: '{{ trigger.event.data.url | default('''') }}'
+    is_finished: '{{ trigger.id == ''finished'' }}'
+    is_error: '{{ trigger.id in [''print_error'',''printer_error'',''print_failed'']
+      }}'
+    title: '{{ ''Print finished'' if is_finished else ''Printer error'' if is_error
+      else ''Printer event'' }} – {{ printer_name }}'
+    message: "{% if is_finished -%}\n  Your print has completed on {{ printer_name
+      }}.\n{%- else -%}\n  {% if err_code %}{{ err_code }} – {% endif %}{{ err_text
+      | default('An error was reported.') }}\n{%- endif %}"
+- id: '1759148124206'
+  alias: Bambu → Phone + Alexa (finish/error, quiet 22:00–08:00)
+  description: Push to iPhone + iPad. Alexa speaks in Office + Bedroom only 08:00–22:00.
+  triggers:
+  - trigger: device
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_finished
+  - trigger: device
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_error
+  - trigger: device
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_printer_error
+  - trigger: device
+    domain: bambu_lab
+    device_id: 69d84f8eef4b7987f49a8029f1a74940
+    type: event_print_failed
+  actions:
+  - action: notify.send_message
+    target:
+      entity_id: notify.mobile_app_iphone
+    data:
+      title: '{{ title }}'
+      message: '{{ message }}'
+  - action: notify.send_message
+    target:
+      entity_id: notify.mobile_app_gordons_ipad
+    data:
+      title: '{{ title }}'
+      message: '{{ message }}'
+  - choose:
+    - conditions:
+      - condition: time
+        after: 08:00:00
+        before: '22:00:00'
+      sequence:
+      - action: notify.send_message
+        target:
+          entity_id: notify.office_show_announce
+        data:
+          message: '{{ title }}. {{ message }}'
+      - action: notify.send_message
+        target:
+          entity_id: notify.bedroom_echo_show_announce
+        data:
+          message: '{{ title }}. {{ message }}'
+  mode: single
+  variables:
+    printer_name: '{{ trigger.event.data.name | default(''Bambu Printer'') }}'
+    title: "{% if trigger.type == 'event_print_finished' %}\n  Print finished – {{
+      printer_name }}\n{% elif trigger.type in ['event_print_error','event_printer_error','event_print_failed']
+      %}\n  Printer error – {{ printer_name }}\n{% else %}\n  Printer event – {{ printer_name
+      }}\n{% endif %}\n"
+    message: "{% if trigger.type == 'event_print_finished' %}\n  Your print has completed
+      on {{ printer_name }}.\n{% else %}\n  An error was reported on {{ printer_name
+      }}.\n{% endif %}\n"
+- id: download_entity_list_webhook
+  alias: Download Entity List (webhook)
+  description: ''
+  triggers:
+  - webhook_id: sfijdfg7dfgpejtfu06f
+    allowed_methods:
+    - GET
+    local_only: true
+    trigger: webhook
+  conditions: []
+  actions:
+  - action: webhook.response
+    data:
+      status: 200
+      headers:
+        Content-Type: text/plain; charset=utf-8
+        Content-Disposition: attachment; filename="entity_list.txt"
+      body: '{% for s in states | map(attribute=''entity_id'') | sort %}
+
+        {{ s }}
+
+        {% endfor %}'
+  mode: single
+- id: download_entity_list_webhook
+  alias: Download Entity List (webhook)
+  description: ''
+  triggers:
+  - webhook_id: sfijdfg7dfgpejtfu06f
+    allowed_methods:
+    - GET
+    local_only: true
+    trigger: webhook
+  conditions: []
+  actions:
+  - action: webhook.response
+    data:
+      status: 200
+      headers:
+        Content-Type: text/plain; charset=utf-8
+        Content-Disposition: attachment; filename="entity_list.txt"
+      body: '{% for s in states | map(attribute=''entity_id'') | sort %}
+
+        {{ s }}
+
+        {% endfor %}'
+  mode: single
+- id: battery_alerts_10_5
+  alias: "\U0001F50B Battery alerts at 10% and 5%"
+  description: ''
+  triggers:
+  - trigger: event
+    event_type: state_changed
+  conditions:
+  - condition: template
+    value_template: '{{ is_battery and is_numeric and (crossed|length > 0) }}'
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: 'Battery {{ level }}%: {{ entity_name }}'
+      message: '{{ entity_name }}{% if area %} ({{ area }}){% endif %} is at {{ percent
+        }}%. You''ll also be alerted again at 5% if it drops further.'
+      notification_id: battery-{{ entity_id }}-{{ level }}
+  - condition: template
+    value_template: '{{ not is_state(''switch.everywhere_do_not_disturb'', ''on'')
+      }}'
+  - action: notify.everywhere_announce
+    data:
+      message: '{{ entity_name }}{% if area %} in the {{ area }}{% endif %} battery
+        is at {{ percent }} percent.'
+  mode: parallel
+  max: 20
+  variables:
+    e: '{{ trigger.event.data }}'
+    to: '{{ e.new_state }}'
+    frm: '{{ e.old_state }}'
+    thresholds:
+    - 10
+    - 5
+    is_battery: '{{ to is not none and to.attributes.device_class == ''battery'' }}'
+    is_numeric: '{{ to is not none and to.state is number }}'
+    crossed: "{% set hits = [] %} {% if is_battery and is_numeric and frm is not none
+      and frm.state is number %}\n  {% for t in thresholds %}\n    {% if frm.state|float(1000)
+      > t and to.state|float(1000) <= t %}\n      {% set hits = hits + [t] %}\n    {%
+      endif %}\n  {% endfor %}\n{% endif %} {{ hits|sort }}"
+    level: '{{ (crossed|first) if crossed else none }}'
+    entity_id: '{{ to.entity_id if to is not none else '''' }}'
+    entity_name: '{{ to.name if to is not none else '''' }}'
+    area: '{{ area_name(to.entity_id) if to is not none else '''' }}'
+    percent: '{{ to.state if to is not none else '''' }}'
+- id: battery_alerts_10_5
+  alias: "\U0001F50B Battery alerts at 10% and 5%"
+  description: ''
+  triggers:
+  - trigger: event
+    event_type: state_changed
+  conditions:
+  - condition: template
+    value_template: '{{ is_battery and is_numeric and (crossed|length > 0) }}'
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: 'Battery {{ level }}%: {{ entity_name }}'
+      message: '{{ entity_name }}{% if area %} ({{ area }}){% endif %} is at {{ percent
+        }}%. You''ll also be alerted again at 5% if it drops further.'
+      notification_id: battery-{{ entity_id }}-{{ level }}
+  - condition: template
+    value_template: '{{ not is_state(''switch.everywhere_do_not_disturb'', ''on'')
+      }}'
+  - action: notify.everywhere_announce
+    data:
+      message: '{{ entity_name }}{% if area %} in the {{ area }}{% endif %} battery
+        is at {{ percent }} percent.'
+  mode: parallel
+  max: 20
+  variables:
+    e: '{{ trigger.event.data }}'
+    to: '{{ e.new_state }}'
+    frm: '{{ e.old_state }}'
+    thresholds:
+    - 10
+    - 5
+    is_battery: '{{ to is not none and to.attributes.device_class == ''battery'' }}'
+    is_numeric: '{{ to is not none and to.state is number }}'
+    crossed: "{% set hits = [] %} {% if is_battery and is_numeric and frm is not none
+      and frm.state is number %}\n  {% for t in thresholds %}\n    {% if frm.state|float(1000)
+      > t and to.state|float(1000) <= t %}\n      {% set hits = hits + [t] %}\n    {%
+      endif %}\n  {% endfor %}\n{% endif %} {{ hits|sort }}"
+    level: '{{ (crossed|first) if crossed else none }}'
+    entity_id: '{{ to.entity_id if to is not none else '''' }}'
+    entity_name: '{{ to.name if to is not none else '''' }}'
+    area: '{{ area_name(to.entity_id) if to is not none else '''' }}'
+    percent: '{{ to.state if to is not none else '''' }}'
+- id: battery_alerts_10_5
+  alias: "\U0001F50B Battery alerts at 10% and 5%"
+  triggers:
+  - event_type: state_changed
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ is_battery and is_numeric and (crossed|length > 0) }}'
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: 'Battery {{ level }}%: {{ entity_name }}'
+      message: '{{ entity_name }}{% if area %} ({{ area }}){% endif %} is at {{ percent
+        }}%. You''ll also be alerted again at 5% if it drops further.'
+      notification_id: battery-{{ entity_id }}-{{ level }}
+  - condition: template
+    value_template: '{{ not is_state(''switch.everywhere_do_not_disturb'', ''on'')
+      }}'
+  - action: notify.everywhere_announce
+    data:
+      message: '{{ entity_name }}{% if area %} in the {{ area }}{% endif %} battery
+        is at {{ percent }} percent.'
+  mode: parallel
+  max: 20
+  variables:
+    e: '{{ trigger.event.data }}'
+    to: '{{ e.new_state }}'
+    frm: '{{ e.old_state }}'
+    thresholds:
+    - 10
+    - 5
+    is_battery: '{{ to is not none and to.attributes.device_class == ''battery'' }}'
+    is_numeric: '{{ to is not none and to.state is number }}'
+    crossed: "{% set hits = [] %} {% if is_battery and is_numeric and frm is not none
+      and frm.state is number %}\n  {% for t in thresholds %}\n    {% if frm.state|float(1000)
+      > t and to.state|float(1000) <= t %}\n      {% set hits = hits + [t] %}\n    {%
+      endif %}\n  {% endfor %}\n{% endif %} {{ hits|sort }}"
+    level: '{{ (crossed|first) if crossed else none }}'
+    entity_id: '{{ to.entity_id if to is not none else '''' }}'
+    entity_name: '{{ to.name if to is not none else '''' }}'
+    area: '{{ area_name(to.entity_id) if to is not none else '''' }}'
+    percent: '{{ to.state if to is not none else '''' }}'
+- id: battery_alerts_10_5
+  alias: "\U0001F50B Battery alerts at 10% and 5%"
+  description: ''
+  triggers:
+  - event_type: state_changed
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ is_battery and is_numeric and (crossed|length > 0) }}'
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: 'Battery {{ level }}%: {{ entity_name }}'
+      message: '{{ entity_name }}{% if area %} ({{ area }}){% endif %} is at {{ percent
+        }}%. You''ll also be alerted again at 5% if it drops further.'
+      notification_id: battery-{{ entity_id }}-{{ level }}
+  - condition: template
+    value_template: '{{ not is_state(''switch.everywhere_do_not_disturb'', ''on'')
+      }}'
+  - action: notify.everywhere_announce
+    data:
+      message: '{{ entity_name }}{% if area %} in the {{ area }}{% endif %} battery
+        is at {{ percent }} percent.'
+  mode: parallel
+  max: 20
+  variables:
+    e: '{{ trigger.event.data }}'
+    to: '{{ e.new_state }}'
+    frm: '{{ e.old_state }}'
+    thresholds:
+    - 10
+    - 5
+    is_battery: '{{ to is not none and to.attributes.device_class == ''battery'' }}'
+    is_numeric: '{{ to is not none and to.state is number }}'
+    crossed: "{% set hits = [] %} {% if is_battery and is_numeric and frm is not none
+      and frm.state is number %}\n  {% for t in thresholds %}\n    {% if frm.state|float(1000)
+      > t and to.state|float(1000) <= t %}\n      {% set hits = hits + [t] %}\n    {%
+      endif %}\n  {% endfor %}\n{% endif %} {{ hits|sort }}"
+    level: '{{ (crossed|first) if crossed else none }}'
+    entity_id: '{{ to.entity_id if to is not none else '''' }}'
+    entity_name: '{{ to.name if to is not none else '''' }}'
+    area: '{{ area_name(to.entity_id) if to is not none else '''' }}'
+    percent: '{{ to.state if to is not none else '''' }}'
+- id: battery_alerts_10_5
+  alias: "\U0001F50B Battery alerts at 10% and 5%"
+  triggers:
+  - event_type: state_changed
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ is_battery and is_numeric and (crossed|length > 0) }}'
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: 'Battery {{ level }}%: {{ entity_name }}'
+      message: '{{ entity_name }}{% if area %} ({{ area }}){% endif %} is at {{ percent
+        }}%. You''ll also be alerted again at 5% if it drops further.'
+      notification_id: battery-{{ entity_id }}-{{ level }}
+  - condition: template
+    value_template: '{{ not is_state(''switch.everywhere_do_not_disturb'', ''on'')
+      }}'
+  - action: notify.everywhere_announce
+    data:
+      message: '{{ entity_name }}{% if area %} in the {{ area }}{% endif %} battery
+        is at {{ percent }} percent.'
+  mode: parallel
+  max: 20
+  variables:
+    e: '{{ trigger.event.data }}'
+    to: '{{ e.new_state }}'
+    frm: '{{ e.old_state }}'
+    thresholds:
+    - 10
+    - 5
+    is_battery: '{{ to is not none and to.attributes.device_class == ''battery'' }}'
+    is_numeric: '{{ to is not none and (to.state | float(default=9999)) != 9999 }}'
+    crossed: "{% set hits = [] %} {% if is_battery and is_numeric and frm is not none
+      and (frm.state | float(default=9999)) != 9999 %}\n  {% for t in thresholds %}\n
+      \   {% if (frm.state | float(1000)) > t and (to.state | float(1000)) <= t %}\n
+      \     {% set hits = hits + [t] %}\n    {% endif %}\n  {% endfor %}\n{% endif
+      %} {{ hits|sort }}"
+    level: '{{ (crossed|first) if crossed else none }}'
+    entity_id: '{{ to.entity_id if to is not none else '''' }}'
+    entity_name: '{{ to.name if to is not none else '''' }}'
+    area: '{{ area_name(to.entity_id) if to is not none else '''' }}'
+    percent: '{{ to.state if to is not none else '''' }}'
+- id: battery_alerts_10_5
+  alias: "\U0001F50B Battery alerts at 10% and 5%"
+  description: ''
+  triggers:
+  - event_type: state_changed
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ is_battery and is_numeric and (crossed|length > 0) }}'
+  actions:
+  - action: persistent_notification.create
+    data:
+      title: 'Battery {{ level }}%: {{ entity_name }}'
+      message: '{{ entity_name }}{% if area %} ({{ area }}){% endif %} is at {{ percent
+        }}%. You''ll also be alerted again at 5% if it drops further.'
+      notification_id: battery-{{ entity_id }}-{{ level }}
+  - condition: template
+    value_template: '{{ not is_state(''switch.everywhere_do_not_disturb'', ''on'')
+      }}'
+  - action: notify.everywhere_announce
+    data:
+      message: '{{ entity_name }}{% if area %} in the {{ area }}{% endif %} battery
+        is at {{ percent }} percent.'
+  mode: parallel
+  max: 20
+  variables:
+    e: '{{ trigger.event.data }}'
+    to: '{{ e.new_state }}'
+    frm: '{{ e.old_state }}'
+    thresholds:
+    - 10
+    - 5
+    is_battery: '{{ to is not none and to.attributes.device_class == ''battery'' }}'
+    is_numeric: '{{ to is not none and (to.state | float(default=9999)) != 9999 }}'
+    crossed: "{% set hits = [] %} {% if is_battery and is_numeric and frm is not none
+      and (frm.state | float(default=9999)) != 9999 %}\n  {% for t in thresholds %}\n
+      \   {% if (frm.state | float(1000)) > t and (to.state | float(1000)) <= t %}\n
+      \     {% set hits = hits + [t] %}\n    {% endif %}\n  {% endfor %}\n{% endif
+      %} {{ hits|sort }}"
+    level: '{{ (crossed|first) if crossed else none }}'
+    entity_id: '{{ to.entity_id if to is not none else '''' }}'
+    entity_name: '{{ to.name if to is not none else '''' }}'
+    area: '{{ area_name(to.entity_id) if to is not none else '''' }}'
+    percent: '{{ to.state if to is not none else '''' }}'

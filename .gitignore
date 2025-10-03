@@ -1,0 +1,63 @@
+# Home Assistant Configuration .gitignore
+
+# Ignore everything by default
+*
+
+# But include these important config files
+!*.yaml
+!*.yml
+!*.json
+!.gitignore
+!*.md
+!*.txt
+!*.conf
+
+# Ignore sensitive data and logs
+.secrets
+secrets.yaml
+known_devices.yaml
+ip_bans.yaml
+*.log
+*.log.*
+home-assistant.log*
+
+# Ignore databases
+*.db
+*.db-*
+home-assistant_v2.db*
+zigbee.db*
+
+# Ignore Home Assistant storage and cache
+.storage/
+.cloud/
+.ha_run.lock
+.HA_VERSION
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.lock
+
+# Ignore media and generated content
+www/
+image/
+tts/
+deps/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,40 @@
+"1":
+  alias: "Formula One"
+  sky_channel: "406"
+  announcement: "Switching to Formula One"
+"2":
+  alias: "BBC One"
+  sky_channel: "101"
+  announcement: "Switching to BBC One"
+"3":
+  alias: "BBC Two"
+  sky_channel: "102"
+  announcement: "Switching to BBC Two"
+"4":
+  alias: "ITV"
+  sky_channel: "103"
+  announcement: "Switching to ITV"
+"5":
+  alias: "Channel 4"
+  sky_channel: "104"
+  announcement: "Switching to Channel 4"
+"6":
+  alias: "Sky Sports F1"
+  sky_channel: "406"
+  announcement: "Switching to Sky Sports Formula One"
+"7":
+  alias: "Sky Sports Main Event"
+  sky_channel: "401"
+  announcement: "Switching to Sky Sports Main Event"
+"8":
+  alias: "Sky Atlantic"
+  sky_channel: "108"
+  announcement: "Switching to Sky Atlantic"
+"9":
+  alias: "Discovery"
+  sky_channel: "520"
+  announcement: "Switching to Discovery"
+"10":
+  alias: "National Geographic"
+  sky_channel: "526"
+  announcement: "Switching to National Geographic"

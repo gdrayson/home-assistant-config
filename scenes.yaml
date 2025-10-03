@@ -1,0 +1,134 @@
+- id: '1747847049305'
+  name: Tall Light
+  entities:
+    switch.10001c36cf:
+      restored: false
+      supported_features: 0
+      friendly_name: Tall Light
+      state: 'off'
+  metadata:
+    switch.10001c36cf:
+      entity_only: true
+- id: '1748083789008'
+  name: Downstairs Off
+  entities:
+    media_player.apple_tv_lounge:
+      icon: phu:apple-tv
+      friendly_name: Apple TV - Lounge
+      supported_features: 448439
+      state: 'off'
+    remote.apple_tv_lounge:
+      friendly_name: Apple TV - Lounge
+      supported_features: 0
+      state: 'off'
+    alarm_control_panel.alarm_control_panel:
+      code_format:
+      changed_by: ''
+      code_arm_required: false
+      last_event_info: System Armed (Home) by Remote Management
+      last_event_sensor_name: ''
+      last_event_sensor_type: REMOTE
+      last_event_timestamp: '2025-05-24T10:50:13+00:00'
+      system_id: 2916290
+      alarm_duration: 240
+      battery_backup_power_level: 5414
+      entry_delay_away: 30
+      entry_delay_home: 30
+      exit_delay_away: 60
+      exit_delay_home: 0
+      gsm_strength: -77
+      light: true
+      rf_jamming: false
+      wall_power_level: 6363
+      wifi_strength: -43
+      alarm_volume: high
+      chime_volume: low
+      voice_prompt_volume: medium
+      friendly_name: Alarm control panel
+      supported_features: 3
+      state: armed_home
+    light.bloom_2:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - xy
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      mode: normal
+      dynamics: none
+      icon: phu:bloom
+      friendly_name: Bloom - iMac
+      supported_features: 40
+      state: 'off'
+    light.bloom_1:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - xy
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      mode: normal
+      dynamics: none
+      icon: phu:bloom
+      friendly_name: Bloom - Mac Mini
+      supported_features: 40
+      state: 'off'
+    fan.dyson_fan:
+      preset_modes:
+      - Auto
+      - Normal
+      direction: forward
+      oscillating: false
+      percentage: 0
+      percentage_step: 10
+      preset_mode: Normal
+      angle_low: 135
+      angle_high: 225
+      icon: phu:dyson-floor
+      friendly_name: Dyson Fan
+      supported_features: 63
+      state: 'off'
+    climate.dyson_fan:
+      hvac_modes:
+      - 'off'
+      - cool
+      - heat
+      min_temp: 1
+      max_temp: 37
+      current_temperature: 21.1
+      temperature: 21.7
+      current_humidity: 48
+      hvac_action: 'off'
+      icon: phu:dyson-floor
+      friendly_name: Dyson Fan
+      supported_features: 385
+      state: 'off'
+    light.spot_1:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - xy
+      friendly_name: Spot 1
+      supported_features: 40
+      state: unavailable
+  icon: mdi:close-circle-outline
+  metadata: {}

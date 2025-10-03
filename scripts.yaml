@@ -1,0 +1,239 @@
+send_ir_command:
+  alias: Send IR Command to Device
+  mode: queued
+  fields:
+    device:
+      description: The name of the IR device (e.g. sky)
+      required: true
+    buttons:
+      description: 'A list of buttons to send. Use values like [4, 0, 6] or ["bass_up",
+        "volume_up"]
+
+        '
+      required: true
+  variables:
+    devices:
+      sky:
+        id: 4100e72ec0ac0000e77b80728e32
+        commands:
+          '0': customize10
+          '1': customize1
+          '2': customize2
+          '3': customize3
+          '4': customize4
+          '5': customize5
+          '6': customize6
+          '7': customize7
+          '8': customize8
+          '9': customize9
+      office_tv:
+        id: home/410119efbeac00000000beac0074/press_command
+        commands:
+          '0': customize1
+          '1': customize2
+          '2': customize3
+          '3': customize4
+          '4': customize5
+          '5': customize6
+          '6': customize7
+          '7': customize8
+          '8': customize9
+          '9': customize10
+      orbit_soundbar:
+        id: home/410119efaeac00000000aeac00c5/press_command
+        commands:
+          bass_up: customize1
+          bass_down: customize2
+          treble_up: customize3
+          treble_down: customize4
+          volume_up: customize5
+          volume_down: customize6
+          mute: customize7
+          power: customize8
+          source: customize9
+          bluetooth: customize10
+      bedroom_tv:
+        id: your_device_id_here
+        commands: {}
+    sent_commands: []
+  sequence:
+  - repeat:
+      for_each: '{{ buttons }}'
+      sequence:
+      - variables:
+          btn: "{% if repeat.item is mapping and 'value' in repeat.item %}\n  {{ repeat.item.value
+            }}\n{% else %}\n  {{ repeat.item }}\n{% endif %}"
+          wait_sec: "{% if repeat.item is mapping and 'delay' in repeat.item %}\n
+            \ {{ (repeat.item.delay | float) }}\n{% else %}\n  0.5\n{% endif %}"
+          wait_ms: '{{ (wait_sec | float * 1000) | round(0) | int }}'
+          device_config: '{{ devices.get(device, {}) }}'
+          device_id: '{{ device_config.get(''id'', ''unknown'') }}'
+          payload: '{% set commands = device_config.get(''commands'', {}) %} {% set
+            btn_str = btn | string %} {{ commands.get(btn_str, btn) }}'
+      - service: mqtt.publish
+        data:
+          topic: home/{{ device_id }}/press_command
+          payload: '{{ payload }}'
+      - variables:
+          sent_commands: '{% set current = sent_commands %} {{ current + [{''input'':
+            btn, ''sent'': payload, ''delay'': wait_sec}] }}'
+      - delay:
+          milliseconds: '{{ wait_ms }}'
+  - variables:
+      script_response:
+        device: '{{ device }}'
+        device_id: '{{ devices.get(device, {}).get(''id'', ''unknown'') }}'
+        commands_sent: '{{ sent_commands }}'
+        total_commands: '{{ sent_commands | length }}'
+        summary: 'Sent {{ sent_commands | length }} command(s) to {{ device }}:  {{
+          sent_commands | map(attribute=''sent'') | join('', '') }}'
+  - stop: Commands sent successfully
+    response_variable: script_response
+set_alarm_to_home:
+  alias: Set Alarm to Home
+  sequence:
+  - target:
+      entity_id: alarm_control_panel.alarm_control_panel
+    action: alarm_control_panel.alarm_arm_home
+  mode: single
+  description: ''
+set_alarm_to_away:
+  alias: Set Alarm to Away
+  sequence:
+  - target:
+      entity_id: alarm_control_panel.alarm_control_panel
+    action: alarm_control_panel.alarm_arm_away
+  mode: single
+  description: ''
+salt_refilled_today:
+  alias: Salt Refilled Today
+  mode: single
+  sequence:
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.last_salt_refill
+    data:
+      date: '{{ now().strftime(''%Y-%m-%d'') }}'
+  description: ''
+update_marty_snapshot:
+  alias: Update Marty Snapshot
+  mode: single
+  sequence:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.martycam_updating
+  - action: blink.trigger_camera
+    target:
+      entity_id: camera.marty_cam
+  - delay: 00:00:15
+  - action: homeassistant.update_entity
+    target:
+      entity_id: camera.marty_cam
+  - action: camera.snapshot
+    target:
+      entity_id: camera.marty_cam
+    data:
+      filename: /config/www/blink/martycam_latest.jpg
+  - action: homeassistant.update_entity
+    target:
+      entity_id: camera.martycam_latest
+  - delay: 00:00:05
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.martycam_last_snapshot
+    data:
+      datetime: '{{ now().isoformat() }}'
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.martycam_updating
+save_entity_list:
+  alias: Entity List to Notifications for AI Assistance
+  mode: single
+  sequence:
+  - variables:
+      body: "{% set ha_version = state_attr('update.home_assistant_core_update', 'installed_version')\n
+        \                   or state_attr('update.home_assistant_operating_system_update',
+        'installed_version')\n                    or 'unknown' %}\n\nThis smart home
+        is controlled by Home Assistant {{ ha_version }}.\nAn overview of the areas
+        and the devices in this smart home:\n\n{# -------- Areas with devices --------
+        #}\n{% for area in areas() %}\n  {% set printed_area = namespace(done=false)
+        %}\n  {% for device in area_devices(area) %}\n    {% set dname = device_attr(device,
+        'name_by_user')\n                  or device_attr(device, 'name')\n                  or
+        'Unnamed device' %}\n    {% set dmodel = device_attr(device, 'model') %}\n
+        \   {% set disabled = device_attr(device, 'disabled_by') %}\n    {% if not
+        printed_area.done %}\n{{ area_name(area) }}:\n      {% set printed_area.done
+        = true %}\n    {% endif %}\n- {{ dname }}{% if dmodel and (dmodel|string)
+        not in (dname|string) %} ({{ dmodel }}){% endif %}{% if disabled %} [disabled:
+        {{ disabled }}]{% endif %}\n\n    {% for eid in device_entities(device) |
+        sort %}\n      {% set dom = eid.split('.')[0] %}\n      {# get the State object
+        safely #}\n      {% set st = (states | selectattr('entity_id','eq', eid) |
+        first) %}\n      {% set fname = state_attr(eid,'friendly_name') or (st.name
+        if st is not none else eid) %}\n      {% set dclass = state_attr(eid,'device_class')
+        %}\n      {% if st is not none %}\n        - {{ eid }} — \"{{ fname }}\" [{{
+        dom }}{% if dclass %}/{{ dclass }}{% endif %}] (state: {{ st.state }})\n      {%
+        else %}\n        - {{ eid }} — \"{{ fname }}\" [{{ dom }}{% if dclass %}/{{
+        dclass }}{% endif %}] [not loaded / disabled]\n      {% endif %}\n    {% endfor
+        %}\n  {% endfor %}\n{% endfor %}\n\n{# -------- Devices/entities with no Area
+        assigned -------- #}\n{% set no_area_devices = namespace(list=[]) %}\n{% for
+        s in states %}\n  {% set did = device_id(s.entity_id) %}\n  {% if did and
+        not area_name(s.entity_id) and did not in no_area_devices.list %}\n    {%
+        set no_area_devices.list = no_area_devices.list + [did] %}\n  {% endif %}\n{%
+        endfor %}\n{% if no_area_devices.list %}\nNo Area:\n  {% for device in no_area_devices.list
+        | sort %}\n    {% set dname = device_attr(device, 'name_by_user')\n                  or
+        device_attr(device, 'name')\n                  or 'Unnamed device' %}\n    {%
+        set dmodel = device_attr(device, 'model') %}\n    {% set disabled = device_attr(device,
+        'disabled_by') %}\n- {{ dname }}{% if dmodel and (dmodel|string) not in (dname|string)
+        %} ({{ dmodel }}){% endif %}{% if disabled %} [disabled: {{ disabled }}]{%
+        endif %}\n\n    {% for eid in device_entities(device) | sort %}\n      {%
+        set dom = eid.split('.')[0] %}\n      {% set st = (states | selectattr('entity_id','eq',
+        eid) | first) %}\n      {% set fname = state_attr(eid,'friendly_name') or
+        (st.name if st is not none else eid) %}\n      {% set dclass = state_attr(eid,'device_class')
+        %}\n      {% if st is not none %}\n        - {{ eid }} — \"{{ fname }}\" [{{
+        dom }}{% if dclass %}/{{ dclass }}{% endif %}] (state: {{ st.state }})\n      {%
+        else %}\n        - {{ eid }} — \"{{ fname }}\" [{{ dom }}{% if dclass %}/{{
+        dclass }}{% endif %}] [not loaded / disabled]\n      {% endif %}\n    {% endfor
+        %}\n  {% endfor %}\n{% endif %}\n\nThe current time is {{ now().strftime('%X')
+        }}.\nToday's date is {{ now().strftime('%d/%m/%y') }}.\nrespond to requests
+        quickly and politely"
+  - action: persistent_notification.create
+    data:
+      title: Entity overview (copy & paste)
+      message: '{{ body }}'
+      notification_id: entity_overview
+ai_automation_ideas_export:
+  alias: AI Automation ideas export
+  mode: single
+  sequence:
+  - variables:
+      body: "AI Automation ideas export:\n\n{% set trigger_domains = [\n  'binary_sensor','sensor','event','alarm_control_panel','device_tracker'\n]
+        %}\n{% set action_domains = [\n  'light','switch','media_player','remote','climate','button','scene','script'\n]
+        %}\n\n{% for area in areas() %}\n  {{ area_name(area) }}:\n\n  {# Triggers
+        #}\n  {% for device in area_devices(area) %}\n    {% for eid in device_entities(device)
+        | sort %}\n      {% set dom = eid.split('.')[0] %}\n      {% if dom in trigger_domains
+        %}\n        - (Trigger) {{ eid }} — \"{{ state_attr(eid,'friendly_name') or
+        eid }}\"\n          (state: {{ states(eid) }}, domain: {{ dom }}\n          {%
+        if state_attr(eid,'device_class') %}/{{ state_attr(eid,'device_class') }}{%
+        endif %})\n      {% endif %}\n    {% endfor %}\n  {% endfor %}\n\n  {# Actions
+        #}\n  {% for device in area_devices(area) %}\n    {% for eid in device_entities(device)
+        | sort %}\n      {% set dom = eid.split('.')[0] %}\n      {% if dom in action_domains
+        %}\n        - (Action) {{ eid }} — \"{{ state_attr(eid,'friendly_name') or
+        eid }}\"\n          (state: {{ states(eid) }}, domain: {{ dom }}\n          {%
+        if state_attr(eid,'device_class') %}/{{ state_attr(eid,'device_class') }}{%
+        endif %})\n      {% endif %}\n    {% endfor %}\n  {% endfor %}\n\n{% endfor
+        %}\n\nThe current time is {{ now().strftime('%X') }}.\nToday's date is {{
+        now().strftime('%d/%m/%y') }}."
+  - action: persistent_notification.create
+    data:
+      title: AI Automation ideas export
+      message: '{{ body }}'
+      notification_id: ai_automation_export
+clear_notifications:
+  alias: Clear export notifications
+  mode: single
+  sequence:
+  - action: persistent_notification.dismiss
+    data:
+      notification_id: ai_automation_export
+  - action: persistent_notification.dismiss
+    data:
+      notification_id: entity_overview
