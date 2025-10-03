@@ -1,5 +1,5 @@
 - id: '1747844759998'
-  alias: Set Alarm
+  alias: Set Alarms
   description: ''
   triggers:
   - device_id: 26b5c35a97bb274070d558b5c5bc81ec
